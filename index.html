@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090b10" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>...</title>
+  <style>
+    :root{
+      --bg:#07090e;
+      --card:rgba(18,22,31,.82);
+      --line:rgba(255,255,255,.09);
+      --text:#f7f8fb;
+      --muted:#9aa3b2;
+      --accent:#8b5cf6;
+      --accent2:#22d3ee;
+      --good:#34d399;
+      --bad:#fb7185;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+    body:before{content:"";position:fixed;inset:-25%;background:
+      radial-gradient(circle at 20% 20%,rgba(139,92,246,.18),transparent 27%),
+      radial-gradient(circle at 80% 75%,rgba(34,211,238,.13),transparent 25%);filter:blur(20px);animation:floatBg 8s ease-in-out infinite alternate;pointer-events:none}
+    @keyframes floatBg{to{transform:translate3d(2%,-2%,0) scale(1.05)}}
+    .noise{position:fixed;inset:0;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
+    .screen{position:fixed;inset:0;display:grid;place-items:center;padding:24px;transition:opacity .55s ease, transform .55s ease}
+    .hidden{opacity:0;pointer-events:none;transform:scale(1.025)}
+
+    /* splash */
+    #splash{z-index:5;background:#07090e}
+    .orb{position:absolute;width:230px;height:230px;border-radius:50%;background:conic-gradient(from 0deg,var(--accent),var(--accent2),var(--accent));filter:blur(32px);opacity:.25;animation:spin 2.8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .splash-inner{text-align:center;z-index:1;max-width:760px}
+    .eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;opacity:0;animation:fadeUp .7s .25s forwards}
+    .title{font-size:clamp(34px,9vw,78px);line-height:.95;font-weight:950;letter-spacing:-.055em;margin:0;opacity:0;animation:fadeUp .75s .55s forwards}
+    .title span{background:linear-gradient(110deg,#fff 20%,#9de8ff 55%,#c4a7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .sub{margin:20px auto 0;color:var(--muted);font-size:clamp(14px,3.6vw,19px);opacity:0;animation:fadeUp .75s .9s forwards}
+    .loader{width:min(360px,72vw);height:3px;background:rgba(255,255,255,.08);border-radius:99px;margin:34px auto 0;overflow:hidden;opacity:0;animation:fadeUp .5s 1.15s forwards}
+    .loader:before{content:"";display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 20px rgba(34,211,238,.6);animation:load 2.45s 1.25s cubic-bezier(.16,1,.3,1) forwards}
+    @keyframes load{to{width:100%}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+    /* quiz */
+    #app{z-index:2}
+    .card{width:min(680px,100%);border:1px solid var(--line);background:var(--card);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:28px;padding:clamp(24px,6vw,46px);box-shadow:0 25px 80px rgba(0,0,0,.45);position:relative;overflow:hidden}
+    .card:before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:34px}
+    .badge{font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#c8d0dc;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:999px;padding:8px 11px}
+    .counter{font-size:12px;color:var(--muted)}
+    #question{font-size:clamp(28px,7vw,52px);line-height:1.02;letter-spacing:-.045em;margin:0 0 18px;font-weight:950;min-height:2.04em}
+    #hint{font-size:15px;line-height:1.55;color:var(--muted);min-height:24px;margin-bottom:32px}
+    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    button{border:0;border-radius:18px;padding:17px 18px;font:inherit;font-size:17px;font-weight:900;cursor:pointer;transition:transform .14s ease,filter .14s ease,box-shadow .14s ease;min-height:58px}
+    button:active{transform:scale(.97)}
+    .yes{color:#06130e;background:linear-gradient(135deg,#6ee7b7,#34d399);box-shadow:0 10px 32px rgba(52,211,153,.18)}
+    .no{color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48);box-shadow:0 10px 32px rgba(225,29,72,.16)}
+    .answer-pop{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(12px);font-weight:800;font-size:13px;color:#d9e1ec;background:rgba(9,11,16,.88);border:1px solid var(--line);padding:9px 12px;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap}
+    .answer-pop.show{animation:pop 1.15s ease both}
+    @keyframes pop{0%{opacity:0;transform:translateX(-50%) translateY(12px) scale(.96)}18%,72%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-8px) scale(.98)}}
+    .swap{animation:swap .34s ease both}
+    @keyframes swap{0%{opacity:1;transform:none}48%{opacity:0;transform:translateY(-8px)}49%{transform:translateY(9px)}100%{opacity:1;transform:none}}
+    .footer{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:rgba(255,255,255,.22);font-size:11px;letter-spacing:.08em;z-index:3}
+    .confetti{position:fixed;pointer-events:none;width:8px;height:14px;border-radius:3px;animation:fall 1.5s cubic-bezier(.2,.8,.2,1) forwards;z-index:10}
+    @keyframes fall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+    @media(max-width:460px){.buttons{grid-template-columns:1fr}.card{border-radius:24px}.top{margin-bottom:26px}}
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <section id="splash" class="screen">
+    <div class="orb"></div>
+    <div class="splash-inner">
+      <div class="eyebrow">персональный доступ</div>
+      <h1 class="title">Специально для <span>Козыря</span></h1>
+      <div class="sub">Подготавливаем максимально важный вопрос…</div>
+      <div class="loader"></div>
+    </div>
+  </section>
+
+  <main id="app" class="screen hidden">
+    <div class="card">
+      <div class="top">
+        <div class="badge">опрос для Козыря</div>
+        <div class="counter" id="counter">вопрос 1</div>
+      </div>
+      <h2 id="question">Не пойти ли тебе нахуй?</h2>
+      <div id="hint">Ответ должен быть взвешенным. У тебя почти нет времени подумать.</div>
+      <div class="buttons">
+        <button class="yes" id="yes">Да</button>
+        <button class="no" id="no">Нет</button>
+      </div>
+      <div class="answer-pop" id="pop"></div>
+    </div>
+  </main>
+
+  <div class="footer">KOZYR PERSONAL DECISION SYSTEM · v1.0</div>
+
+  <script>
+    const flow = {
+      start: {
+        q: 'Не пойти ли тебе нахуй?',
+        h: 'Ответ должен быть взвешенным. У тебя почти нет времени подумать.',
+        yes: ['respect', 'Вот это подход. Решение принято 😎'],
+        no: ['memory', 'Слишком быстро отказался. Подумай ещё 😂']
+      },
+      memory: {
+        q: 'Может, всё-таки по старой памяти пойдёшь?',
+        h: 'Без давления. Просто предложение, от которого сложно отказаться.',
+        yes: ['respect2', 'Ну вот, другое дело 🤝'],
+        no: ['discount', 'Упрямый. Ладно, повышаем ставки.']
+      },
+      discount: {
+        q: 'А если красиво попросить?',
+        h: 'Пожалуйста. Исключительно культурно и с уважением.',
+        yes: ['respect2', 'Культурный человек сразу видно.'],
+        no: ['oneMinute', 'Просьба отклонена. Запускаю запасной аргумент.']
+      },
+      oneMinute: {
+        q: 'А буквально на минуточку?',
+        h: 'Сходил — вернулся. Никто даже не заметит.',
+        yes: ['respect3', 'Вот это сервис. Быстро и по делу.'],
+        no: ['friendship', 'Козырь держит оборону. Уважаемо, но мы продолжаем.']
+      },
+      friendship: {
+        q: 'Чисто по-братски?',
+        h: 'Последний аргумент, который невозможно использовать слишком часто.',
+        yes: ['respect3', 'Братский вопрос закрыт ✅'],
+        no: ['principle', 'Железная воля. Проверяем дальше.']
+      },
+      principle: {
+        q: 'Это уже принципиально?',
+        h: 'Нам нужно понять глубину сопротивления.',
+        yes: ['stubborn', 'Принцип зафиксирован. Но протокол ещё не закончен.'],
+        no: ['chance', 'Ага! Значит шанс всё-таки есть.']
+      },
+      chance: {
+        q: 'То есть шанс есть?',
+        h: 'Система почувствовала слабое место.',
+        yes: ['finalOffer', 'Так и знал. Переходим к финальному предложению.'],
+        no: ['stubborn', 'Ладно-ладно. Не сдаёшься.']
+      },
+      stubborn: {
+        q: 'Ты всегда такой упрямый?',
+        h: 'Вопрос уже почти не связан с первым. Почти.',
+        yes: ['finalOffer', 'Стабильность — признак мастерства.'],
+        no: ['finalOffer', 'Сегодня, значит, особый случай.']
+      },
+      finalOffer: {
+        q: 'Финальное предложение: всё-таки да?',
+        h: 'После этого система обещает сделать очень серьёзные выводы.',
+        yes: ['respect4', 'Наконец-то! Система победила 😂'],
+        no: ['boss', 'Невероятно. Ты дошёл до секретного уровня.']
+      },
+      boss: {
+        q: 'Ладно. Тогда ты Козырь или не Козырь?',
+        h: 'Внимание: оба варианта будут использованы против тебя.',
+        yes: ['loop', 'Вот и отлично. Козырю можно ещё один вопрос.'],
+        no: ['loop', 'Поздно. Имя уже записано в протоколе.']
+      },
+      loop: {
+        q: 'Повторить весь допрос ещё раз?',
+        h: 'Выбирай аккуратно. Эта штука реально может начать сначала.',
+        yes: ['start', 'Сам попросил 😈'],
+        no: ['end', 'Хорошая попытка выйти.']
+      },
+      respect: {
+        q: 'Сразу согласился? Даже торговаться не будешь?',
+        h: 'Неожиданно конструктивная позиция.',
+        yes: ['respect2', 'Вот это деловой подход.'],
+        no: ['memory', 'Ага, значит всё-таки есть нюансы.']
+      },
+      respect2: {
+        q: 'Сам решил или тебя система убедила?',
+        h: 'Ответ записывается исключительно в никуда.',
+        yes: ['respect3', 'Самостоятельность одобрена.'],
+        no: ['respect3', 'Система принимает благодарность.']
+      },
+      respect3: {
+        q: 'Тогда закрепим успех?',
+        h: 'Один контрольный вопрос — и почти свободен.',
+        yes: ['respect4', 'Закреплено намертво ✅'],
+        no: ['finalOffer', 'Нет так нет. Хотя…']
+      },
+      respect4: {
+        q: 'Козырь, ты вообще понял, что сейчас произошло?',
+        h: 'Правильного ответа здесь не предусмотрено.',
+        yes: ['loop', 'Это уже больше, чем ожидалось.'],
+        no: ['loop', 'Идеально. Значит прикол сработал.']
+      },
+      end: {
+        q: 'Ладно, свободен. Но вопрос остаётся открытым 😏',
+        h: 'Система завершила опрос и делает вид, что ничего не было.',
+        yes: ['start', 'Передумал? По новой!'],
+        no: ['start', 'Кнопка «Нет» внезапно тоже ведёт в начало 😂']
+      }
+    };
+
+    let state = 'start';
+    let n = 1;
+    const q = document.getElementById('question');
+    const h = document.getElementById('hint');
+    const c = document.getElementById('counter');
+    const pop = document.getElementById('pop');
+    const yes = document.getElementById('yes');
+    const no = document.getElementById('no');
+
+    function confetti(){
+      const colors=['#34d399','#22d3ee','#8b5cf6','#fbbf24','#fb7185'];
+      for(let i=0;i<24;i++){
+        const el=document.createElement('i');
+        el.className='confetti';
+        el.style.left=(50+(Math.random()*18-9))+'vw';
+        el.style.top='58vh';
+        el.style.background=colors[(Math.random()*colors.length)|0];
+        el.style.setProperty('--x',(Math.random()*360-180)+'px');
+        el.style.setProperty('--y',(Math.random()*280+120)+'px');
+        el.style.setProperty('--r',(Math.random()*900-450)+'deg');
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),1600);
+      }
+    }
+
+    function answer(kind){
+      const item=flow[state];
+      const [next,msg]=item[kind];
+      if(kind==='yes') confetti();
+      pop.textContent=msg;
+      pop.classList.remove('show');
+      void pop.offsetWidth;
+      pop.classList.add('show');
+      const card=q.parentElement;
+      card.classList.add('swap');
+      setTimeout(()=>{
+        state=next;
+        n++;
+        q.textContent=flow[state].q;
+        h.textContent=flow[state].h;
+        c.textContent='вопрос '+n;
+      },165);
+      setTimeout(()=>card.classList.remove('swap'),360);
+    }
+
+    yes.addEventListener('click',()=>answer('yes'));
+    no.addEventListener('click',()=>answer('no'));
+
+    setTimeout(()=>{
+      document.getElementById('splash').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    },4000);
+  </script>
+</body>
+</html>
